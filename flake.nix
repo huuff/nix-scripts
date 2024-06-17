@@ -13,7 +13,7 @@
   in
   {
 
-    packages.${system} = {
+    packages = {
       # Screenshots a part of the screen and saves it to the clipboard
       clipscrot = pkgs.writeShellScriptBin "clipscrot" ''
         ${pkgs.scrot}/bin/scrot -s - | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
