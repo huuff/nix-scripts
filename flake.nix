@@ -37,6 +37,15 @@
         cp -r "$1" "$next_backup_file"
         chmod -w "$next_backup_file"
       '';
+      
+      # Runs about every single command I know to clean docker
+      # stuff
+      docker-nuke = pkgs.writeShellScriptBin "docker-nuke" ''
+        docker rm -vm $(docker ps -aq) \
+        && docker rmi -f $(docker images -aq) \
+        && docker volume rm $(docker volume ls -q) \
+        && docker system prune -af --volumes
+      '';
     };
 
   });
