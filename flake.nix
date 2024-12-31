@@ -46,6 +46,12 @@
         && docker volume rm $(docker volume ls -q) \
         && docker system prune -af --volumes
       '';
+
+      # Cleans everything unused or old from the nix store
+      nix-nuke = pkgs.writeShellScriptBin "nix-nuke" ''
+        ${pkgs.home-manager}/bin/home-manager expire-generations "-1 days" && \
+        sudo nix-collect-garbage -d
+      '';
     };
 
   });
