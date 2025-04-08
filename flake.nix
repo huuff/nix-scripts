@@ -13,7 +13,7 @@
   in
   {
 
-    packages = {
+    packages = rec {
       # Screenshots a part of the screen and saves it to the clipboard
       clipscrot = pkgs.writeShellScriptBin "clipscrot" ''
         ${pkgs.scrot}/bin/scrot -s - | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
@@ -51,6 +51,17 @@
       nix-nuke = pkgs.writeShellScriptBin "nix-nuke" ''
         ${pkgs.home-manager}/bin/home-manager expire-generations "-1 days" && \
         sudo nix-collect-garbage -d
+      '';
+
+      # Runs both `nix-nuke` and `docker-nuke`
+      #
+      # I think it's important to run nix-nuke first since that will ask for sudo, so
+      # better get it done ASAP to avoid interruptions down the line
+      nuke-all = pkgs.writeShellScriptBin "nuke-all" ''
+        echo "Running nix-nuke..."
+        ${nix-nuke}/bin/nix-nuke
+        echo "Running docker-nuke..."
+        ${docker-nuke}/bin/docker-nuke
       '';
     };
 
