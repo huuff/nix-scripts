@@ -63,6 +63,11 @@
         echo "Running docker-nuke..."
         ${docker-nuke}/bin/docker-nuke
       '';
+
+      # Delete all branches but `main` or `master` and that have been merged
+      git-prune-branches = pkgs.writeShellScriptBin "git-prune-branches" ''
+        git branch | grep -v master | grep -v main | xargs git branch -d
+      '';
     };
 
   });
