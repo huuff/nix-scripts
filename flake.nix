@@ -8,6 +8,10 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pre-commit = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -16,12 +20,20 @@
       nixpkgs,
       utils,
       treefmt,
+      pre-commit,
     }:
     utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
         treefmt-build = (treefmt.lib.evalModule pkgs ./treefmt.nix).config.build;
+        pre-commit-check = pre-commit.lib.${system}.run {
+          src = ./.;
+          hooks = import ./pre-commit.nix {
+            inherit pkgs;
+            treefmt = treefmt-build.wrapper;
+          };
+        };
       in
       {
 
@@ -94,6 +106,18 @@
         };
 
         formatter = treefmt-build.wrapper;
+
+        devShells.default = pkgs.mkShell {
+          inherit (pre-commit-check) shellHook;
+
+          buildInputs =
+            with pkgs;
+            pre-commit-check.enabledPackages
+            ++ [
+              nil
+              nixfmt-rfc-style
+            ];
+        };
 
       }
     );
