@@ -12,6 +12,10 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-checks = {
+      url = "github:huuff/nix-checks";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -21,6 +25,7 @@
       utils,
       treefmt,
       pre-commit,
+      nix-checks,
     }:
     utils.lib.eachDefaultSystem (
       system:
@@ -34,6 +39,7 @@
             treefmt = treefmt-build.wrapper;
           };
         };
+        inherit (nix-checks.lib.${system}) checks;
       in
       {
 
@@ -103,6 +109,10 @@
 
         checks = {
           formatting = treefmt-build.check self;
+
+          statix = checks.statix ./.;
+          deadnix = checks.deadnix ./.;
+          flake-checker = checks.flake-checker ./.;
         };
 
         formatter = treefmt-build.wrapper;
