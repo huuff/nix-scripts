@@ -105,6 +105,11 @@
           git-prune-branches = pkgs.writeShellScriptBin "git-prune-branches" ''
             git branch | grep -v master | grep -v main | xargs git branch -d
           '';
+
+          # Removes a key from ssh unknown hosts, useful when these change a lot like it does for me
+          ssh-removekey = pkgs.writeShellScriptBin "ssh-removekey" ''
+            sed -i "/$1/d" "$HOME/.ssh/known_hosts"
+          '';
         };
 
         checks = {
