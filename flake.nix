@@ -44,18 +44,6 @@
       {
 
         packages = rec {
-          # Screenshots a part of the screen and saves it to the clipboard
-          clipscrot = pkgs.writeShellScriptBin "clipscrot" ''
-            ${pkgs.scrot}/bin/scrot -s - | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png
-          '';
-
-          # Screenshots a part of the screen, saves it to a temporary file and stores the path in the clipboard
-          pathscrot = pkgs.writeShellScriptBin "pathscrot" ''
-            screenshot_path="$(mktemp -d)/$(date +%s).png"
-            ${pkgs.scrot}/bin/scrot -s "$screenshot_path"
-            echo "$screenshot_path" | ${pkgs.xclip}/bin/xclip -selection clipboard
-          '';
-
           # Creates a backup of a file/directory and makes it
           # read-only to avoid accidentally deleting it
           # (rm asks for confirmation on read-only files)
